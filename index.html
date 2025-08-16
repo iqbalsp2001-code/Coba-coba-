@@ -1,30 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
   <title>Live Chika - Streaming Sekarang!</title>
 
-  <!-- ✅ Open Graph untuk WhatsApp, FB, Telegram -->
+  <!-- ✅ Open Graph -->
   <meta property="og:title" content="Live Chika - Streaming Sekarang!" />
   <meta property="og:description" content="Tonton live streaming seru bareng Chika, jangan sampai kelewatan keseruan malam ini 🔥" />
   <meta property="og:image" content="https://www.dropbox.com/scl/fi/ah0iye40npmn58tz8326s/20250620_205712.png?rlkey=fwv72ela7jp0fliwkmal1nxfv&st=r47r1z85&raw=1" />
-  <meta property="og:url" content=" " />
+  <meta property="og:url" content="https://iqbalsp2001-code.github.io/Wa-spam/" />
   <meta property="og:type" content="website" />
 
   <!-- ✅ Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Live Chika - Streaming Sekarang!" />
   <meta name="twitter:description" content="Tonton live streaming seru bareng Chika, jangan sampai kelewatan keseruan malam ini 🔥" />
-  <meta name="twitter:image" content="https://via.placeholder.com/1200x630" />
+  <meta name="twitter:image" content="https://www.dropbox.com/scl/fi/ah0iye40npmn58tz8326s/20250620_205712.png?rlkey=fwv72ela7jp0fliwkmal1nxfv&st=r47r1z85&raw=1" />
 
   <style>
-    body, html {
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
       margin: 0;
-      padding: 0;
       height: 100%;
       overflow: hidden;
-      font-family: Arial, sans-serif;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       background: #000;
       color: #fff;
     }
@@ -34,215 +36,232 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
+      background: #000;
     }
 
-    /* ✅ Background Video */
+    /* ✅ Video tidak pakai z-index negatif */
     .live-container video {
       position: absolute;
-      top: 0; left: 0;
+      inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
-      z-index: -1;
+      z-index: 1;               /* video di bawah overlay & UI */
+      background: #000;
+      pointer-events: none;     /* biar klik tembus ke UI/efek heart */
     }
 
     .overlay {
       position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
+      inset: 0;
       background: rgba(0,0,0,0.25);
+      z-index: 2;
     }
 
     /* Profil + Info */
+    .profile,
+    .viewers,
+    .play-button,
+    .comments { z-index: 3; position: absolute; }
+
     .profile {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: rgba(0,0,0,0.4);
-      padding: 6px 12px;
-      border-radius: 30px;
+      top: 20px; left: 20px;
+      display: flex; align-items: center; gap: 10px;
+      background: rgba(0,0,0,0.45);
+      padding: 6px 12px; border-radius: 30px;
+      backdrop-filter: blur(4px);
     }
-
     .profile img {
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      border: 2px solid #fff;
+      width: 45px; height: 45px; border-radius: 50%;
+      border: 2px solid #fff; object-fit: cover;
     }
-
-    .profile-info {
-      display: flex;
-      flex-direction: column;
-      font-size: 13px;
-    }
-
+    .profile-info { display: flex; flex-direction: column; font-size: 13px; }
     .follow-btn {
-      margin-left: auto;
-      background: #ff0050;
-      color: #fff;
-      border: none;
-      padding: 5px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      cursor: pointer;
+      margin-left: 8px; background: #ff0050; color: #fff; border: 0;
+      padding: 6px 12px; border-radius: 20px; font-size: 12px; cursor: pointer;
     }
 
-    /* Viewer Count */
     .viewers {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: rgba(0,0,0,0.4);
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 13px;
+      top: 20px; right: 20px;
+      background: rgba(0,0,0,0.45);
+      padding: 6px 12px; border-radius: 20px; font-size: 13px;
+      backdrop-filter: blur(4px);
     }
 
-    /* Tombol play */
     .play-button {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: transform 0.2s ease;
-      z-index: 10;
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 80px; height: 80px; border-radius: 50%;
+      background: rgba(255,255,255,0.75);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: transform .2s ease; box-shadow: 0 8px 30px rgba(0,0,0,.4);
+    }
+    .play-button:hover { transform: translate(-50%, -50%) scale(1.06); }
+    .play-button::before {
+      content: ""; width: 0; height: 0;
+      border-left: 26px solid #000; border-top: 15px solid transparent; border-bottom: 15px solid transparent;
     }
 
-    .play-button:hover {
-      transform: translate(-50%, -50%) scale(1.1);
-    }
-
-    .play-button:before {
-      content: '';
-      display: block;
-      width: 0;
-      height: 0;
-      border-left: 25px solid #000;
-      border-top: 15px solid transparent;
-      border-bottom: 15px solid transparent;
-    }
-
-    /* Komentar */
     .comments {
-      position: absolute;
-      bottom: 50px;
-      left: 20px;
-      right: 20px;
-      max-height: 200px;
-      overflow-y: hidden;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      font-size: 14px;
+      left: 20px; right: 20px; bottom: 50px;
+      max-height: 220px; overflow: hidden;
+      display: flex; flex-direction: column; gap: 6px; font-size: 14px;
     }
-
     .comment {
-      background: rgba(0,0,0,0.4);
-      padding: 5px 10px;
-      border-radius: 12px;
-      max-width: 75%;
-      animation: fadeInUp 1s ease forwards;
+      background: rgba(0,0,0,0.45);
+      padding: 6px 10px; border-radius: 12px; max-width: 75%;
+      animation: fadeInUp 500ms ease forwards; backdrop-filter: blur(2px);
     }
-
     @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* Hearts */
     .heart {
-      position: absolute;
-      font-size: 22px;
-      color: red;
-      animation: floatUp 3s linear forwards;
-      opacity: 0.8;
-      pointer-events: none;
+      position: absolute; font-size: 22px; color: #ff3b3b;
+      animation: floatUp 2.6s linear forwards; opacity: .9; pointer-events: none; z-index: 3;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,.6));
     }
-
     @keyframes floatUp {
       from { transform: translateY(0) scale(1); opacity: 1; }
-      to { transform: translateY(-300px) scale(1.5); opacity: 0; }
+      to   { transform: translateY(-300px) scale(1.5); opacity: 0; }
+    }
+
+    /* Optional: indikator kalau autoplay gagal (akan disembunyikan kalau sukses) */
+    .tap-to-play {
+      position: absolute; inset: 0; display: none; place-items: center; z-index: 4;
+      background: rgba(0,0,0,0.45); backdrop-filter: blur(2px);
+      font-weight: 600; letter-spacing: .3px;
+    }
+    .tap-to-play.visible { display: grid; }
+    .tap-to-play .btn {
+      background: #ff0050; padding: 10px 16px; border-radius: 999px; cursor: pointer; user-select: none;
+    }
+
+    @media (max-width: 480px) {
+      .comments { bottom: 40px; font-size: 13px; }
+      .play-button { width: 72px; height: 72px; }
     }
   </style>
 </head>
 <body>
 
 <div class="live-container" id="liveArea">
-
-  <!-- ✅ Background Video Aktif -->
-  <video id="bg-video" autoplay muted loop playsinline>
-  <source src="https://iqbalsp2001-code.github.io/Wa-spam/0.0-156.0.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+  <!-- ✅ Background Video dengan dua sumber (GH Pages + jsDelivr fallback) -->
+  <video id="bg-video"
+         autoplay muted playsinline webkit-playsinline loop preload="auto"
+         disablepictureinpicture
+         controlslist="nodownload noplaybackrate noremoteplayback">
+    <source src="https://iqbalsp2001-code.github.io/Wa-spam/0.0-156.0.mp4" type="video/mp4" />
+    <source src="https://cdn.jsdelivr.net/gh/iqbalsp2001-code/Wa-spam@main/0.0-156.0.mp4" type="video/mp4" />
+  </video>
 
   <div class="overlay"></div>
 
-  <!-- Profil -->
+  <!-- UI -->
   <div class="profile">
-    <img src="https://raw.githubusercontent.com/iqbalsp2001-code/Wa-spam/refs/heads/main/IMG-20250529-WA0003.jpg" alt="Profile">
+    <img src="https://raw.githubusercontent.com/iqbalsp2001-code/Wa-spam/refs/heads/main/IMG-20250529-WA0003.jpg" alt="Profile" />
     <div class="profile-info">
       <strong>Chika</strong>
       <span>15.6K Followers</span>
     </div>
-    <button class="follow-btn">Follow</button>
+    <button class="follow-btn" type="button">Follow</button>
   </div>
 
-  <!-- Viewer count -->
   <div class="viewers" id="viewerCount">👁 5,123</div>
 
-  <!-- Tombol Play -->
-  <div class="play-button" id="playBtn"></div>
+  <div class="play-button" id="playBtn" title="Go"></div>
 
-  <!-- Komentar -->
   <div class="comments" id="comments">
     <div class="comment">ratna_j: Selalu puas belanja di sini</div>
     <div class="comment">fitri_shop: Keren banget live-nya!</div>
     <div class="comment">joko_p: Senyumnya manis banget</div>
   </div>
+
+  <!-- Fallback overlay kalau autoplay masih diblok -->
+  <div class="tap-to-play" id="tapOverlay">
+    <div class="btn" id="tapPlayBtn">Tap to start</div>
+  </div>
 </div>
 
 <script>
-  // Redirect link saat tombol play di klik
-  const playBtn = document.getElementById("playBtn");
-  playBtn.addEventListener("click", () => {
-    window.location.href = "https://merpati.gurufavorit.com/2025/08/title-free-ai-powered-tools-to-help-you.html"; // ganti link tujuan
+  // ====== AUTOPLAY FIX (paling penting) ======
+  (function ensureAutoPlay() {
+    const video = document.getElementById('bg-video');
+    const tapOverlay = document.getElementById('tapOverlay');
+    const tapPlayBtn = document.getElementById('tapPlayBtn');
+
+    // Pastikan muted sebelum mencoba play
+    video.muted = true;
+    video.setAttribute('muted', ''); // untuk Safari iOS
+
+    let tried = 0;
+    const tryPlay = () => {
+      tried++;
+      const p = video.play();
+      if (p && typeof p.then === 'function') {
+        p.then(() => {
+          // sukses
+          tapOverlay.classList.remove('visible');
+        }).catch(() => {
+          // gagal -> mungkin kebijakan autoplay; tampilkan overlay setelah beberapa percobaan
+          if (tried >= 2) tapOverlay.classList.add('visible');
+        });
+      }
+    };
+
+    // Coba di beberapa momen aman
+    document.addEventListener('DOMContentLoaded', tryPlay, { once: true });
+    window.addEventListener('load', () => setTimeout(tryPlay, 100), { once: true });
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') tryPlay();
+    });
+
+    // Fallback: gestur pertama user
+    const oneShot = () => { tryPlay(); window.removeEventListener('pointerdown', oneShot); window.removeEventListener('touchstart', oneShot); };
+    window.addEventListener('pointerdown', oneShot, { once: true });
+    window.addEventListener('touchstart', oneShot, { once: true });
+
+    // Tombol overlay
+    tapPlayBtn.addEventListener('click', () => { tryPlay(); tapOverlay.classList.remove('visible'); });
+
+    // Jika source pertama gagal, paksa reload (biar fallback <source> kedua kepakai)
+    video.addEventListener('error', () => {
+      // trigger ulang loading sumber berikutnya
+      video.load();
+      tryPlay();
+    });
+  })();
+
+  // ====== Redirect tombol play ======
+  document.getElementById('playBtn').addEventListener('click', () => {
+    window.location.href = "https://merpati.gurufavorit.com/2025/08/title-free-ai-powered-tools-to-help-you.html";
   });
 
-  // Fungsi buat hati
+  // ====== Hearts effect ======
   function createHeart(x, y) {
-    let heart = document.createElement('div');
-    heart.classList.add('heart');
-    heart.style.left = (x || (window.innerWidth - 50 - Math.random()*100)) + 'px';
-    heart.style.top = (y || (window.innerHeight - 120)) + 'px';
-    heart.innerHTML = "❤️";
+    const heart = document.createElement('div');
+    heart.className = 'heart';
+    const left = (x || (window.innerWidth - 50 - Math.random() * 100));
+    const top = (y || (window.innerHeight - 120));
+    heart.style.left = left + 'px';
+    heart.style.top = top + 'px';
+    heart.textContent = '❤️';
     document.body.appendChild(heart);
-    setTimeout(()=>heart.remove(), 3000);
+    setTimeout(() => heart.remove(), 2600);
   }
 
-  // Efek hati saat tap manual
-  document.getElementById("liveArea").addEventListener('click', function(e) {
-    if (e.target.id !== "playBtn") {
+  // Manual tap
+  document.getElementById('liveArea').addEventListener('click', (e) => {
+    if (!e.target.closest('#playBtn') && !e.target.closest('#tapOverlay')) {
       createHeart(e.clientX, e.clientY);
     }
   });
 
-  // Efek hati otomatis
-  setInterval(() => {
-    createHeart();
-  }, 800);
+  // Auto hearts
+  setInterval(() => createHeart(), 800);
 
-  // Komentar otomatis
-  const comments = document.getElementById("comments");
+  // ====== Comments auto ======
+  const comments = document.getElementById('comments');
   const commentList = [
     "agus_s: Wajah adem banget 😊",
     "bambang_p: Baru gabung nih!",
@@ -251,27 +270,21 @@
     "lina_shop: Barangnya ori banget!",
     "rizky123: Gak nyesel nonton live ini 😍"
   ];
-
-  let i = 0;
+  let ci = 0;
   setInterval(() => {
-    if (i < commentList.length) {
-      let c = document.createElement("div");
-      c.classList.add("comment");
-      c.textContent = commentList[i];
-      comments.appendChild(c);
-      if (comments.children.length > 6) {
-        comments.removeChild(comments.firstChild);
-      }
-      i++;
-    }
-  }, 2500);
+    const text = commentList[ci++ % commentList.length];
+    const c = document.createElement('div');
+    c.className = 'comment';
+    c.textContent = text;
+    comments.appendChild(c);
+    if (comments.children.length > 6) comments.removeChild(comments.firstChild);
+  }, 2300);
 
-  // Viewer count naik turun realtime
-  const viewerCount = document.getElementById("viewerCount");
+  // ====== Viewers random ======
+  const viewerCount = document.getElementById('viewerCount');
   let viewers = 5123;
   setInterval(() => {
-    let change = Math.floor(Math.random() * 10) - 5; // -5 sampai +5
-    viewers = Math.max(5000, viewers + change);
+    viewers = Math.max(5000, viewers + Math.floor(Math.random() * 10) - 5);
     viewerCount.textContent = "👁 " + viewers.toLocaleString();
   }, 2000);
 </script>
