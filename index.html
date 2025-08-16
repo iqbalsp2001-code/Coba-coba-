@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live TikTok Style</title>
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: black;
+        color: white;
+        overflow: hidden;
+    }
+    .live-container {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+        background: black;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .paused-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: brightness(0.7);
+    }
+    .profile {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        display: flex;
+        align-items: center;
+        background: rgba(0,0,0,0.4);
+        padding: 8px 12px;
+        border-radius: 25px;
+    }
+    .profile img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+    .profile .name {
+        font-weight: bold;
+    }
+    .pause-button {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0,0,0,0.6);
+        border: none;
+        padding: 20px;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+    .pause-button img {
+        width: 40px;
+    }
+    .comments {
+        position: absolute;
+        bottom: 20px;
+        left: 10px;
+        width: 80%;
+        max-height: 150px;
+        overflow: hidden;
+        font-size: 14px;
+    }
+    .comment {
+        margin-bottom: 5px;
+        animation: commentUp 6s linear infinite;
+    }
+    @keyframes commentUp {
+        from {transform: translateY(100%); opacity: 0;}
+        10% {opacity: 1;}
+        to {transform: translateY(-120%); opacity: 0;}
+    }
+    .hearts {
+        position: absolute;
+        right: 20px;
+        bottom: 20px;
+        pointer-events: none;
+    }
+    .heart {
+        position: absolute;
+        width: 24px;
+        animation: floatUp 2s ease-out forwards;
+    }
+    @keyframes floatUp {
+        0% {transform: translateY(0) scale(1); opacity: 1;}
+        100% {transform: translateY(-200px) scale(1.5); opacity: 0;}
+    }
+</style>
+</head>
+<body>
+
+<div class="live-container" id="liveArea">
+    <img src="https://via.placeholder.com/1080x1920.png?text=LIVE+PAUSED" class="paused-image" id="liveImage">
+    
+    <div class="profile">
+        <img src="https://via.placeholder.com/100" alt="Profile">
+        <div>
+            <div class="name">@username</div>
+            <div style="font-size:12px;color:lightgray;">Sedang Live</div>
+        </div>
+    </div>
+
+    <a href="https://tiktok.com/@username/live" target="_blank">
+        <button class="pause-button">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Media-playback-start.svg" alt="Play">
+        </button>
+    </a>
+
+    <div class="comments" id="comments">
+        <div class="comment">User1: Mantap banget!</div>
+        <div class="comment">User2: Salam dari Jakarta</div>
+        <div class="comment">User3: Lanjut bang!</div>
+    </div>
+
+    <div class="hearts" id="hearts"></div>
+</div>
+
+<script>
+    // Simulasi komentar berjalan
+    const commentList = [
+        "UserA: Halo!",
+        "UserB: Wih keren",
+        "UserC: Gokil parah",
+        "UserD: Mantap jiwa",
+        "UserE: Lanjut terus"
+    ];
+    const commentsContainer = document.getElementById('comments');
+    setInterval(() => {
+        const comment = document.createElement('div');
+        comment.className = 'comment';
+        comment.textContent = commentList[Math.floor(Math.random()*commentList.length)];
+        commentsContainer.appendChild(comment);
+        if (commentsContainer.children.length > 5) {
+            commentsContainer.removeChild(commentsContainer.firstChild);
+        }
+    }, 2000);
+
+    // Efek tap-tap hati
+    const liveArea = document.getElementById('liveArea');
+    const heartsContainer = document.getElementById('hearts');
+    liveArea.addEventListener('click', () => {
+        const heart = document.createElement('img');
+        heart.src = "https://upload.wikimedia.org/wikipedia/commons/4/49/Heart_coraz%C3%B3n.svg";
+        heart.className = 'heart';
+        heart.style.left = (Math.random() * 30) + "px";
+        heartsContainer.appendChild(heart);
+        setTimeout(() => heart.remove(), 2000);
+    });
+</script>
+
+</body>
+</html>
