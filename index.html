@@ -3,7 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Live Streaming Style</title>
+  <title>Live Chika - Streaming Sekarang!</title>
+
+  <!-- ✅ Open Graph untuk WhatsApp, FB, Telegram -->
+  <meta property="og:title" content="Live Chika - Streaming Sekarang!" />
+  <meta property="og:description" content="Tonton live streaming seru bareng Chika, jangan sampai kelewatan keseruan malam ini 🔥" />
+  <meta property="og:image" content="https://www.dropbox.com/scl/fi/ah0iye40npmn58tz8326s/20250620_205712.png?rlkey=fwv72ela7jp0fliwkmal1nxfv&st=r47r1z85&dl=1" />
+  <meta property="og:url" content=" " />
+  <meta property="og:type" content="website" />
+
+  <!-- ✅ Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Live Chika - Streaming Sekarang!" />
+  <meta name="twitter:description" content="Tonton live streaming seru bareng Chika, jangan sampai kelewatan keseruan malam ini 🔥" />
+  <meta name="twitter:image" content="https://via.placeholder.com/1200x630" />
+
   <style>
     body, html {
       margin: 0;
@@ -19,17 +33,26 @@
       position: relative;
       width: 100%;
       height: 100%;
-      background: url("https://via.placeholder.com/600x900") no-repeat center/cover;
+      overflow: hidden;
     }
 
-    /* Overlay gelap agar teks terlihat jelas */
+    /* ✅ Background Video */
+    .live-container video {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1;
+    }
+
     .overlay {
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.3);
+      background: rgba(0,0,0,0.25);
     }
 
-    /* Profil */
+    /* Profil + Info */
     .profile {
       position: absolute;
       top: 20px;
@@ -37,18 +60,44 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      background: rgba(0,0,0,0.4);
+      padding: 6px 12px;
+      border-radius: 30px;
     }
 
     .profile img {
-      width: 50px;
-      height: 50px;
+      width: 45px;
+      height: 45px;
       border-radius: 50%;
       border: 2px solid #fff;
     }
 
     .profile-info {
-      font-size: 14px;
-      font-weight: bold;
+      display: flex;
+      flex-direction: column;
+      font-size: 13px;
+    }
+
+    .follow-btn {
+      margin-left: auto;
+      background: #ff0050;
+      color: #fff;
+      border: none;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    /* Viewer Count */
+    .viewers {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(0,0,0,0.4);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 13px;
     }
 
     /* Tombol play */
@@ -66,6 +115,7 @@
       justify-content: center;
       cursor: pointer;
       transition: transform 0.2s ease;
+      z-index: 10;
     }
 
     .play-button:hover {
@@ -85,7 +135,7 @@
     /* Komentar */
     .comments {
       position: absolute;
-      bottom: 40px;
+      bottom: 50px;
       left: 20px;
       right: 20px;
       max-height: 200px;
@@ -100,7 +150,7 @@
       background: rgba(0,0,0,0.4);
       padding: 5px 10px;
       border-radius: 12px;
-      max-width: 70%;
+      max-width: 75%;
       animation: fadeInUp 1s ease forwards;
     }
 
@@ -109,10 +159,10 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Efek tap-tap hati */
+    /* Hearts */
     .heart {
       position: absolute;
-      font-size: 24px;
+      font-size: 22px;
       color: red;
       animation: floatUp 3s linear forwards;
       opacity: 0.8;
@@ -128,13 +178,27 @@
 <body>
 
 <div class="live-container" id="liveArea">
+
+  <!-- ✅ Background Video Aktif -->
+  <video autoplay muted loop playsinline>
+    <source src="https://www.dropbox.com/scl/fi/m8qxangsec6g687wyjege/0.0-156.0.mp4?rlkey=jc4nxs9k0qfujxooi8zei6iv9&st=r3jme65s&dl=1" type="video/mp4">
+    Browser kamu tidak mendukung video.
+  </video>
+
   <div class="overlay"></div>
 
   <!-- Profil -->
   <div class="profile">
     <img src="https://raw.githubusercontent.com/iqbalsp2001-code/Wa-spam/refs/heads/main/IMG-20250529-WA0003.jpg" alt="Profile">
-    <div class="profile-info">Chika • 15.6K Followers</div>
+    <div class="profile-info">
+      <strong>Chika</strong>
+      <span>15.6K Followers</span>
+    </div>
+    <button class="follow-btn">Follow</button>
   </div>
+
+  <!-- Viewer count -->
+  <div class="viewers" id="viewerCount">👁 5,123</div>
 
   <!-- Tombol Play -->
   <div class="play-button" id="playBtn"></div>
@@ -151,29 +215,41 @@
   // Redirect link saat tombol play di klik
   const playBtn = document.getElementById("playBtn");
   playBtn.addEventListener("click", () => {
-    window.location.href = "https://contoh-link.com"; // Ganti dengan link tujuanmu
+    window.location.href = "https://contoh-link.com"; // ganti link tujuan
   });
 
-  // Efek hati saat tap layar
+  // Fungsi buat hati
+  function createHeart(x, y) {
+    let heart = document.createElement('div');
+    heart.classList.add('heart');
+    heart.style.left = (x || (window.innerWidth - 50 - Math.random()*100)) + 'px';
+    heart.style.top = (y || (window.innerHeight - 120)) + 'px';
+    heart.innerHTML = "❤️";
+    document.body.appendChild(heart);
+    setTimeout(()=>heart.remove(), 3000);
+  }
+
+  // Efek hati saat tap manual
   document.getElementById("liveArea").addEventListener('click', function(e) {
-    if (e.target.id !== "playBtn") { // biar klik tombol play tetap redirect
-      let heart = document.createElement('div');
-      heart.classList.add('heart');
-      heart.style.left = (e.clientX - 10) + 'px';
-      heart.style.top = (e.clientY - 10) + 'px';
-      heart.innerHTML = "❤️";
-      document.body.appendChild(heart);
-      setTimeout(()=>heart.remove(), 3000);
+    if (e.target.id !== "playBtn") {
+      createHeart(e.clientX, e.clientY);
     }
   });
 
-  // Tambah komentar berjalan otomatis
+  // Efek hati otomatis
+  setInterval(() => {
+    createHeart();
+  }, 800);
+
+  // Komentar otomatis
   const comments = document.getElementById("comments");
   const commentList = [
     "agus_s: Wajah adem banget 😊",
     "bambang_p: Baru gabung nih!",
     "nina_k: Mantap banget live nya 🔥",
-    "yusuf99: Bikin betah nonton!"
+    "yusuf99: Bikin betah nonton!",
+    "lina_shop: Barangnya ori banget!",
+    "rizky123: Gak nyesel nonton live ini 😍"
   ];
 
   let i = 0;
@@ -183,12 +259,21 @@
       c.classList.add("comment");
       c.textContent = commentList[i];
       comments.appendChild(c);
-      if (comments.children.length > 5) {
+      if (comments.children.length > 6) {
         comments.removeChild(comments.firstChild);
       }
       i++;
     }
-  }, 3000);
+  }, 2500);
+
+  // Viewer count naik turun realtime
+  const viewerCount = document.getElementById("viewerCount");
+  let viewers = 5123;
+  setInterval(() => {
+    let change = Math.floor(Math.random() * 10) - 5; // -5 sampai +5
+    viewers = Math.max(5000, viewers + change);
+    viewerCount.textContent = "👁 " + viewers.toLocaleString();
+  }, 2000);
 </script>
 
 </body>
