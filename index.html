@@ -29,6 +29,8 @@
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       background: #000;
       color: #fff;
+      display: flex;
+      flex-direction: column;
     }
 
     .live-container {
@@ -36,29 +38,23 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
+      flex: 1;
       background: #000;
     }
 
-    /* ✅ Video tidak pakai z-index negatif */
     .live-container video {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
-      z-index: 1;               /* video di bawah overlay & UI */
+      z-index: 1;
       background: #000;
-      pointer-events: none;     /* biar klik tembus ke UI/efek heart */
+      pointer-events: none;
     }
 
-    .overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.25);
-      z-index: 2;
-    }
+    .overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.25); z-index: 2; }
 
-    /* Profil + Info */
     .profile,
     .viewers,
     .play-button,
@@ -126,7 +122,6 @@
       to   { transform: translateY(-300px) scale(1.5); opacity: 0; }
     }
 
-    /* Optional: indikator kalau autoplay gagal (akan disembunyikan kalau sukses) */
     .tap-to-play {
       position: absolute; inset: 0; display: none; place-items: center; z-index: 4;
       background: rgba(0,0,0,0.45); backdrop-filter: blur(2px);
@@ -137,6 +132,19 @@
       background: #ff0050; padding: 10px 16px; border-radius: 999px; cursor: pointer; user-select: none;
     }
 
+    /* ✅ Tombol "Tonton Live Sekarang" */
+    .watch-now {
+      background: #ff0050;
+      text-align: center;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      color: #fff;
+    }
+    .watch-now:hover { background: #e60046; }
+
     @media (max-width: 480px) {
       .comments { bottom: 40px; font-size: 13px; }
       .play-button { width: 72px; height: 72px; }
@@ -146,7 +154,6 @@
 <body>
 
 <div class="live-container" id="liveArea">
-  <!-- ✅ Background Video dengan dua sumber (GH Pages + jsDelivr fallback) -->
   <video id="bg-video"
          autoplay muted playsinline webkit-playsinline loop preload="auto"
          disablepictureinpicture
@@ -157,7 +164,6 @@
 
   <div class="overlay"></div>
 
-  <!-- UI -->
   <div class="profile">
     <img src="https://raw.githubusercontent.com/iqbalsp2001-code/Wa-spam/refs/heads/main/IMG-20250529-WA0003.jpg" alt="Profile" />
     <div class="profile-info">
@@ -168,7 +174,6 @@
   </div>
 
   <div class="viewers" id="viewerCount">👁 5,123</div>
-
   <div class="play-button" id="playBtn" title="Go"></div>
 
   <div class="comments" id="comments">
@@ -177,67 +182,55 @@
     <div class="comment">joko_p: Senyumnya manis banget</div>
   </div>
 
-  <!-- Fallback overlay kalau autoplay masih diblok -->
   <div class="tap-to-play" id="tapOverlay">
     <div class="btn" id="tapPlayBtn">Tap to start</div>
   </div>
 </div>
 
+<!-- ✅ Tombol di bawah video -->
+<a href="https://merpati.gurufavorit.com/2025/08/title-free-ai-powered-tools-to-help-you.html" class="watch-now">
+  🎥 Tonton Live Sekarang
+</a>
+
 <script>
-  // ====== AUTOPLAY FIX (paling penting) ======
   (function ensureAutoPlay() {
     const video = document.getElementById('bg-video');
     const tapOverlay = document.getElementById('tapOverlay');
     const tapPlayBtn = document.getElementById('tapPlayBtn');
 
-    // Pastikan muted sebelum mencoba play
     video.muted = true;
-    video.setAttribute('muted', ''); // untuk Safari iOS
+    video.setAttribute('muted', '');
 
     let tried = 0;
     const tryPlay = () => {
       tried++;
       const p = video.play();
       if (p && typeof p.then === 'function') {
-        p.then(() => {
-          // sukses
-          tapOverlay.classList.remove('visible');
-        }).catch(() => {
-          // gagal -> mungkin kebijakan autoplay; tampilkan overlay setelah beberapa percobaan
-          if (tried >= 2) tapOverlay.classList.add('visible');
-        });
+        p.then(() => tapOverlay.classList.remove('visible'))
+         .catch(() => { if (tried >= 2) tapOverlay.classList.add('visible'); });
       }
     };
 
-    // Coba di beberapa momen aman
     document.addEventListener('DOMContentLoaded', tryPlay, { once: true });
     window.addEventListener('load', () => setTimeout(tryPlay, 100), { once: true });
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') tryPlay();
     });
 
-    // Fallback: gestur pertama user
     const oneShot = () => { tryPlay(); window.removeEventListener('pointerdown', oneShot); window.removeEventListener('touchstart', oneShot); };
     window.addEventListener('pointerdown', oneShot, { once: true });
     window.addEventListener('touchstart', oneShot, { once: true });
 
-    // Tombol overlay
     tapPlayBtn.addEventListener('click', () => { tryPlay(); tapOverlay.classList.remove('visible'); });
-
-    // Jika source pertama gagal, paksa reload (biar fallback <source> kedua kepakai)
-    video.addEventListener('error', () => {
-      // trigger ulang loading sumber berikutnya
-      video.load();
-      tryPlay();
-    });
+    video.addEventListener('error', () => { video.load(); tryPlay(); });
   })();
 
-  // ====== Redirect tombol play ======
+  // Redirect tombol play
   document.getElementById('playBtn').addEventListener('click', () => {
     window.location.href = "https://merpati.gurufavorit.com/2025/08/title-free-ai-powered-tools-to-help-you.html";
   });
 
-  // ====== Hearts effect ======
+  // Hearts
   function createHeart(x, y) {
     const heart = document.createElement('div');
     heart.className = 'heart';
@@ -249,18 +242,14 @@
     document.body.appendChild(heart);
     setTimeout(() => heart.remove(), 2600);
   }
-
-  // Manual tap
   document.getElementById('liveArea').addEventListener('click', (e) => {
     if (!e.target.closest('#playBtn') && !e.target.closest('#tapOverlay')) {
       createHeart(e.clientX, e.clientY);
     }
   });
-
-  // Auto hearts
   setInterval(() => createHeart(), 800);
 
-  // ====== Comments auto ======
+  // Comments
   const comments = document.getElementById('comments');
   const commentList = [
     "agus_s: Wajah adem banget 😊",
@@ -280,7 +269,7 @@
     if (comments.children.length > 6) comments.removeChild(comments.firstChild);
   }, 2300);
 
-  // ====== Viewers random ======
+  // Viewers
   const viewerCount = document.getElementById('viewerCount');
   let viewers = 5123;
   setInterval(() => {
