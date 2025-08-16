@@ -1,136 +1,195 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Live TikTok Style</title>
-<style>
-    body {
-        margin: 0;
-        font-family: Arial, sans-serif;
-        background-color: #000;
-        color: #fff;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Streaming Style</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      background: #000;
+      color: #fff;
     }
+
     .live-container {
-        position: relative;
-        max-width: 400px;
-        margin: auto;
-        overflow: hidden;
-        border-radius: 10px;
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: url("https://via.placeholder.com/600x900") no-repeat center/cover;
     }
-    .live-image {
-        width: 100%;
-        display: block;
+
+    /* Overlay gelap agar teks terlihat jelas */
+    .overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.3);
     }
-    /* Bagian Profil */
+
+    /* Profil */
     .profile {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        display: flex;
-        align-items: center;
-        background: rgba(0, 0, 0, 0.5);
-        padding: 5px 10px;
-        border-radius: 30px;
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
+
     .profile img {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        margin-right: 10px;
-        object-fit: cover;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 2px solid #fff;
     }
-    .follow-btn {
-        background: red;
-        border: none;
-        color: white;
-        padding: 5px 10px;
-        border-radius: 15px;
-        margin-left: 8px;
-        cursor: pointer;
+
+    .profile-info {
+      font-size: 14px;
+      font-weight: bold;
     }
-    /* Tombol Play */
+
+    /* Tombol play */
     .play-button {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 10;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s ease;
     }
-    .play-button img {
-        width: 70px;
-        cursor: pointer;
+
+    .play-button:hover {
+      transform: translate(-50%, -50%) scale(1.1);
     }
-    /* Chat Box */
-    .chat-box {
-        position: absolute;
-        bottom: 60px;
-        left: 10px;
-        width: calc(100% - 20px);
+
+    .play-button:before {
+      content: '';
+      display: block;
+      width: 0;
+      height: 0;
+      border-left: 25px solid #000;
+      border-top: 15px solid transparent;
+      border-bottom: 15px solid transparent;
     }
-    .chat-message {
-        background: rgba(0,0,0,0.5);
-        padding: 5px 10px;
-        border-radius: 15px;
-        margin-bottom: 4px;
-        font-size: 14px;
+
+    /* Komentar */
+    .comments {
+      position: absolute;
+      bottom: 40px;
+      left: 20px;
+      right: 20px;
+      max-height: 200px;
+      overflow-y: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 14px;
     }
-    .chat-message span {
-        color: #ffcc00;
-        font-weight: bold;
+
+    .comment {
+      background: rgba(0,0,0,0.4);
+      padding: 5px 10px;
+      border-radius: 12px;
+      max-width: 70%;
+      animation: fadeInUp 1s ease forwards;
     }
-    /* Ikon bawah */
-    .bottom-icons {
-        position: absolute;
-        bottom: 10px;
-        right: 10px;
-        display: flex;
-        gap: 10px;
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
-    .bottom-icons img {
-        width: 30px;
-        cursor: pointer;
+
+    /* Efek tap-tap hati */
+    .heart {
+      position: absolute;
+      font-size: 24px;
+      color: red;
+      animation: floatUp 3s linear forwards;
+      opacity: 0.8;
+      pointer-events: none;
     }
-</style>
+
+    @keyframes floatUp {
+      from { transform: translateY(0) scale(1); opacity: 1; }
+      to { transform: translateY(-300px) scale(1.5); opacity: 0; }
+    }
+  </style>
 </head>
 <body>
 
-<div class="live-container">
-    <!-- Gambar live dari screenshot -->
-    <img src="live-background.jpg" alt="Live" class="live-image">
+<div class="live-container" id="liveArea">
+  <div class="overlay"></div>
 
-    <!-- Profil -->
-    <div class="profile">
-        <img src="profile.jpg" alt="Profil">
-        <div>
-            <strong>Chika</strong><br>
-            15.6K
-        </div>
-        <button class="follow-btn">+ Ikuti</button>
-    </div>
+  <!-- Profil -->
+  <div class="profile">
+    <img src="https://raw.githubusercontent.com/iqbalsp2001-code/Wa-spam/refs/heads/main/IMG-20250529-WA0003.jpg" alt="Profile">
+    <div class="profile-info">Chika • 15.6K Followers</div>
+  </div>
 
-    <!-- Tombol Play -->
-    <div class="play-button">
-        <a href="https://link-anda.com">
-            <img src="play-icon.png" alt="Play">
-        </a>
-    </div>
+  <!-- Tombol Play -->
+  <div class="play-button" id="playBtn"></div>
 
-    <!-- Chat -->
-    <div class="chat-box">
-        <div class="chat-message"><span>ratna_juwita</span> Selalu puas belanja di sini</div>
-        <div class="chat-message"><span>fitri_shop</span> Keren banget live-nya!</div>
-        <div class="chat-message"><span>joko_p</span> Salfok sama senyumnya, manis banget</div>
-        <div class="chat-message"><span>agus_santoso</span> Wajahnya adem banget diliat 😊</div>
-    </div>
-
-    <!-- Ikon bawah -->
-    <div class="bottom-icons">
-        <img src="icon-star.png" alt="Star">
-        <img src="icon-rose.png" alt="Rose">
-        <img src="icon-gift.png" alt="Gift">
-    </div>
+  <!-- Komentar -->
+  <div class="comments" id="comments">
+    <div class="comment">ratna_j: Selalu puas belanja di sini</div>
+    <div class="comment">fitri_shop: Keren banget live-nya!</div>
+    <div class="comment">joko_p: Senyumnya manis banget</div>
+  </div>
 </div>
+
+<script>
+  // Redirect link saat tombol play di klik
+  const playBtn = document.getElementById("playBtn");
+  playBtn.addEventListener("click", () => {
+    window.location.href = "https://contoh-link.com"; // Ganti dengan link tujuanmu
+  });
+
+  // Efek hati saat tap layar
+  document.getElementById("liveArea").addEventListener('click', function(e) {
+    if (e.target.id !== "playBtn") { // biar klik tombol play tetap redirect
+      let heart = document.createElement('div');
+      heart.classList.add('heart');
+      heart.style.left = (e.clientX - 10) + 'px';
+      heart.style.top = (e.clientY - 10) + 'px';
+      heart.innerHTML = "❤️";
+      document.body.appendChild(heart);
+      setTimeout(()=>heart.remove(), 3000);
+    }
+  });
+
+  // Tambah komentar berjalan otomatis
+  const comments = document.getElementById("comments");
+  const commentList = [
+    "agus_s: Wajah adem banget 😊",
+    "bambang_p: Baru gabung nih!",
+    "nina_k: Mantap banget live nya 🔥",
+    "yusuf99: Bikin betah nonton!"
+  ];
+
+  let i = 0;
+  setInterval(() => {
+    if (i < commentList.length) {
+      let c = document.createElement("div");
+      c.classList.add("comment");
+      c.textContent = commentList[i];
+      comments.appendChild(c);
+      if (comments.children.length > 5) {
+        comments.removeChild(comments.firstChild);
+      }
+      i++;
+    }
+  }, 3000);
+</script>
 
 </body>
 </html>
